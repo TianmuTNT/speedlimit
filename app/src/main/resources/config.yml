@@ -2,8 +2,12 @@
 
 # Make sure that this file is in valid YAML format
 
-# maximum speed (1 meter = 1 block)
-max-meters-per-second: 40
+# 普通飞行的最大速度 (1 meter = 1 block)
+max-meters-per-second: 30
+
+# 鞘翅飞行的最大速度 (1 meter = 1 block)
+# 设置为 -1 表示不限制鞘翅飞行速度
+elytra-max-meters-per-second: 40
 
 # allow players to fall (straight or almost straight) down faster than the speed limit (true = allow, false = don't allow)
 allow-falling-bypass: true
@@ -12,12 +16,15 @@ allow-falling-bypass: true
 only-flying: false
 only-on-ground: false
 
-# the message a player will receive if he is above the speed limit (accepts color codes) type the message inside the quotes, to disable leave only the quotes with nothing in between
-too-fast-message: "&c飞行速度过快，请降低飞行速度。"
+# 普通飞行超速消息 (accepts color codes) type the message inside the quotes, to disable leave only the quotes with nothing in between
+too-fast-message: "&c飞行速度过快，请降低速度。"
+
+# 鞘翅飞行超速消息 (accepts color codes)
+elytra-too-fast-message: "&c鞘翅飞行速度过快，请降低速度。"
 
 # whether to set a player back to riding an vehicle after the player passed the speed limit while riding a vehicle
 # THIS IS ONLY SUPPORTED IN VERSIONS 1.12 AND ABOVE
-put-back-on-vehicle: false
+put-back-on-vehicle: true
 
 # worlds that have a speed limit
 worlds:

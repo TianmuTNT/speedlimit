@@ -23,7 +23,9 @@ public class MoveListener {
      * 检查所有玩家的速度并限制超速玩家
      */
     private void checkPlayerSpeeds() {
-        double allowed = plugin.getConfig().getDouble("max-meters-per-second");
+        double allowedNormal = plugin.getConfig().getDouble("max-meters-per-second");
+        double allowedElytra = plugin.getConfig().getDouble("elytra-max-meters-per-second");
+        
         for (Player player : Bukkit.getOnlinePlayers()) {
             // 跳过有权限绕过限制的玩家
             if (player.hasPermission("speedlimit.bypass")) {
@@ -51,8 +53,16 @@ public class MoveListener {
                         } else {
                             // 检查速度是否超过限制
                             double distance = movementVector.length();
-                            if (distance > allowed) {
-                                handleSpeedLimitViolation(player, prevLocation, distance, allowed);
+                            
+                            // 检查玩家是否在使用鞘翅飞行
+                            boolean isUsingElytra = player.isGliding();
+                            double allowedSpeed = isUsingElytra ? allowedElytra : allowedNormal;
+                            
+                            // 如果鞘翅速度限制设为-1，则不限制鞘翅飞行速度
+                            if (isUsingElytra && allowedSpeed < 0) {
+                                // 不限制鞘翅飞行速度
+                            } else if (distance > allowedSpeed) {
+                                handleSpeedLimitViolation(player, prevLocation, distance, allowedSpeed, isUsingElytra);
                             }
                         }
                     }
@@ -76,11 +86,12 @@ public class MoveListener {
     /**
      * 处理超速违规
      */
-    private void handleSpeedLimitViolation(Player player, Location prevLocation, double actualSpeed, double allowedSpeed) {
+    private void handleSpeedLimitViolation(Player player, Location prevLocation, double actualSpeed, double allowedSpeed, boolean isUsingElytra) {
         // 记录到控制台
+        String flyingType = isUsingElytra ? "鞘翅飞行" : "普通飞行";
         plugin.getLogger().info(
-            String.format("玩家 %s 触发了速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒", 
-            player.getName(), actualSpeed, allowedSpeed)
+            String.format("玩家 %s 触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒", 
+            player.getName(), flyingType, actualSpeed, allowedSpeed)
         );
         
         // 处理玩家在载具中的情况
@@ -100,14 +111,15 @@ public class MoveListener {
         }
         
         // 发送消息给玩家
-        String message = plugin.getConfig().getString("too-fast-message");
+        String configKey = isUsingElytra ? "elytra-too-fast-message" : "too-fast-message";
+        String message = plugin.getConfig().getString(configKey);
         if (message != null && !message.isEmpty()) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
             
             // 向所有OP玩家发送消息
             String opMessage = ChatColor.translateAlternateColorCodes('&', 
-                String.format("&e[SpeedLimit] &c玩家 &6%s &c触发了速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒", 
-                player.getName(), actualSpeed, allowedSpeed));
+                String.format("&e[SpeedLimit] &c玩家 &6%s &c触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒", 
+                player.getName(), flyingType, actualSpeed, allowedSpeed));
                 
             for (Player op : Bukkit.getOnlinePlayers()) {
                 if (op.isOp() && !op.equals(player)) {

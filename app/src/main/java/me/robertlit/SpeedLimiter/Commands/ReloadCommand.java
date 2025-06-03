@@ -65,8 +65,18 @@ public class ReloadCommand implements CommandExecutor {
     private void reloadConfig(CommandSender sender) {
         try {
             this.plugin.reloadConfig();
-            double speedLimit = this.plugin.getConfig().getDouble("max-meters-per-second");
-            sender.sendMessage(ChatColor.GREEN + "配置重载成功! 当前速度限制: " + speedLimit + " 方块/秒");
+            double normalSpeedLimit = this.plugin.getConfig().getDouble("max-meters-per-second");
+            double elytraSpeedLimit = this.plugin.getConfig().getDouble("elytra-max-meters-per-second");
+            
+            sender.sendMessage(ChatColor.GREEN + "配置重载成功!");
+            sender.sendMessage(ChatColor.GREEN + "普通飞行速度限制: " + normalSpeedLimit + " 方块/秒");
+            
+            if (elytraSpeedLimit < 0) {
+                sender.sendMessage(ChatColor.GREEN + "鞘翅飞行速度: 不限制");
+            } else {
+                sender.sendMessage(ChatColor.GREEN + "鞘翅飞行速度限制: " + elytraSpeedLimit + " 方块/秒");
+            }
+            
             this.plugin.getLogger().info("配置已被 " + sender.getName() + " 重载");
         } catch (Exception e) {
             sender.sendMessage(ChatColor.RED + "配置重载失败: " + e.getMessage());

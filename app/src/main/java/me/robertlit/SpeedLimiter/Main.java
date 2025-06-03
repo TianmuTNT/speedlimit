@@ -50,8 +50,17 @@ public class Main extends JavaPlugin {
         new JoinListener(this);
         
         // 输出启动信息
-        double speedLimit = getConfig().getDouble("max-meters-per-second");
-        getLogger().info("SpeedLimit插件已启动! 当前速度限制: " + speedLimit + " 方块/秒");
+        double normalSpeedLimit = getConfig().getDouble("max-meters-per-second");
+        double elytraSpeedLimit = getConfig().getDouble("elytra-max-meters-per-second");
+        
+        getLogger().info("SpeedLimit插件已启动!");
+        getLogger().info("普通飞行速度限制: " + normalSpeedLimit + " 方块/秒");
+        
+        if (elytraSpeedLimit < 0) {
+            getLogger().info("鞘翅飞行速度: 不限制");
+        } else {
+            getLogger().info("鞘翅飞行速度限制: " + elytraSpeedLimit + " 方块/秒");
+        }
     }
     
     @Override
