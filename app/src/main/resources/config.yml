@@ -1,0 +1,26 @@
+# SpeedLimit by robertlit
+
+# Make sure that this file is in valid YAML format
+
+# maximum speed (1 meter = 1 block)
+max-meters-per-second: 40
+
+# allow players to fall (straight or almost straight) down faster than the speed limit (true = allow, false = don't allow)
+allow-falling-bypass: true
+
+# set speed limit mode, if both are true nothing will happen (the default, both are false, means: there is speed limit when flying and also when on ground)
+only-flying: false
+only-on-ground: false
+
+# the message a player will receive if he is above the speed limit (accepts color codes) type the message inside the quotes, to disable leave only the quotes with nothing in between
+too-fast-message: "&c飞行速度过快，请降低飞行速度。"
+
+# whether to set a player back to riding an vehicle after the player passed the speed limit while riding a vehicle
+# THIS IS ONLY SUPPORTED IN VERSIONS 1.12 AND ABOVE
+put-back-on-vehicle: false
+
+# worlds that have a speed limit
+worlds:
+- world
+- world_nether
+- world_the_end

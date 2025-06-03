@@ -1,0 +1,11 @@
+name: ${name}
+author: robertlit
+version: ${version}
+main: me.robertlit.SpeedLimiter.Main
+commands:
+  speedlimit:
+    description: "Show info about the SpeedLimit. Optional args: reload - reload the config"
+permissions:
+  speedlimit.bypass:
+    description: Bypass the speed limit
+    default: op
