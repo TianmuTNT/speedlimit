@@ -116,14 +116,14 @@ public class MoveListener {
         if (message != null && !message.isEmpty()) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
             
-            // 向所有OP玩家发送消息
+            // 向所有拥有 speedlimit.verbose 权限的玩家发送消息
             String opMessage = ChatColor.translateAlternateColorCodes('&', 
                 String.format("&e[SpeedLimit] &c玩家 &6%s &c触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒", 
                 player.getName(), flyingType, actualSpeed, allowedSpeed));
                 
-            for (Player op : Bukkit.getOnlinePlayers()) {
-                if (op.isOp() && !op.equals(player)) {
-                    op.sendMessage(opMessage);
+            for (Player staff : Bukkit.getOnlinePlayers()) {
+                if (staff.hasPermission("speedlimit.verbose") && !staff.equals(player)) {
+                    staff.sendMessage(opMessage);
                 }
             }
         }
