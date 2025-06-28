@@ -31,3 +31,17 @@ worlds:
 - world
 - world_nether
 - world_the_end
+
+# VL累积系统配置
+# 设置为 -1 表示不执行相应操作
+vl-system:
+  # 累积多少VL后踢出玩家 (-1 = 不踢出)
+  kick-threshold: 5
+  # 累积多少VL后封禁玩家 (-1 = 不封禁)
+  ban-threshold: 10
+  # 踢出玩家的命令 (使用 {player} 作为玩家名占位符)
+  kick-command: "kick {player} 累积超速违规次数过多"
+  # 封禁玩家的命令 (使用 {player} 作为玩家名占位符)
+  ban-command: "ban {player} 累积超速违规次数过多"
+  # VL重置时间 (分钟，-1 = 永不重置)
+  vl-reset-minutes: 30

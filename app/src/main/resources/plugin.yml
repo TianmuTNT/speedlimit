@@ -9,3 +9,6 @@ permissions:
   speedlimit.bypass:
     description: Bypass the speed limit
     default: op
+  speedlimit.verbose:
+    description: Receive detailed speed limit violation messages
+    default: op
