@@ -87,15 +87,21 @@ public class MoveListener {
      * 处理超速违规
      */
     private void handleSpeedLimitViolation(Player player, Location prevLocation, double actualSpeed, double allowedSpeed, boolean isUsingElytra) {
-        // 增加玩家VL
-        plugin.addViolation(player.getName());
-        int currentVL = plugin.getViolation(player.getName());
+        // 根据飞行类型增加玩家VL
+        if (isUsingElytra) {
+            plugin.addElytraViolation(player.getName());
+        } else {
+            plugin.addNormalViolation(player.getName());
+        }
+        
+        int currentNormalVL = plugin.getNormalViolation(player.getName());
+        int currentElytraVL = plugin.getElytraViolation(player.getName());
         
         // 记录到控制台
         String flyingType = isUsingElytra ? "鞘翅飞行" : "普通飞行";
         plugin.getLogger().info(
-            String.format("玩家 %s 触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒, 当前VL: %d", 
-            player.getName(), flyingType, actualSpeed, allowedSpeed, currentVL)
+            String.format("玩家 %s 触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒, 普通飞行VL: %d, 鞘翅飞行VL: %d", 
+            player.getName(), flyingType, actualSpeed, allowedSpeed, currentNormalVL, currentElytraVL)
         );
         
         // 处理玩家在载具中的情况
@@ -115,7 +121,7 @@ public class MoveListener {
         }
         
         // 检查VL阈值并执行相应操作
-        checkAndExecuteVLActions(player, currentVL);
+        checkAndExecuteVLActions(player, isUsingElytra);
         
         // 发送消息给玩家
         String configKey = isUsingElytra ? "elytra-too-fast-message" : "too-fast-message";
@@ -125,8 +131,8 @@ public class MoveListener {
             
             // 向所有拥有 speedlimit.verbose 权限的玩家发送消息
             String opMessage = ChatColor.translateAlternateColorCodes('&', 
-                String.format("&e[SpeedLimit] &c玩家 &6%s &c触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒, 当前VL: %d", 
-                player.getName(), flyingType, actualSpeed, allowedSpeed, currentVL));
+                String.format("&e[SpeedLimit] &c玩家 &6%s &c触发了%s速度限制! 实际速度: %.2f 方块/秒, 允许速度: %.2f 方块/秒, 普通飞行VL: %d, 鞘翅飞行VL: %d", 
+                player.getName(), flyingType, actualSpeed, allowedSpeed, currentNormalVL, currentElytraVL));
                 
             for (Player staff : Bukkit.getOnlinePlayers()) {
                 if (staff.hasPermission("speedlimit.verbose") && !staff.equals(player)) {
@@ -139,16 +145,19 @@ public class MoveListener {
     /**
      * 检查VL阈值并执行相应操作
      */
-    private void checkAndExecuteVLActions(Player player, int currentVL) {
-        int kickThreshold = plugin.getConfig().getInt("vl-system.kick-threshold");
-        int banThreshold = plugin.getConfig().getInt("vl-system.ban-threshold");
+    private void checkAndExecuteVLActions(Player player, boolean isUsingElytra) {
+        String flyingType = isUsingElytra ? "elytra-flying" : "normal-flying";
+        int kickThreshold = plugin.getConfig().getInt("vl-system." + flyingType + ".kick-threshold");
+        int banThreshold = plugin.getConfig().getInt("vl-system." + flyingType + ".ban-threshold");
+        
+        int currentVL = isUsingElytra ? plugin.getElytraViolation(player.getName()) : plugin.getNormalViolation(player.getName());
         
         // 检查是否需要封禁
         if (banThreshold > 0 && currentVL >= banThreshold) {
-            String banCommand = plugin.getConfig().getString("vl-system.ban-command");
+            String banCommand = plugin.getConfig().getString("vl-system." + flyingType + ".ban-command");
             if (banCommand != null && !banCommand.isEmpty()) {
                 banCommand = banCommand.replace("{player}", player.getName());
-                plugin.getLogger().info("执行封禁命令: " + banCommand);
+                plugin.getLogger().info("执行" + (isUsingElytra ? "鞘翅飞行" : "普通飞行") + "封禁命令: " + banCommand);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), banCommand);
             }
             return; // 封禁后不需要再踢出
@@ -156,10 +165,10 @@ public class MoveListener {
         
         // 检查是否需要踢出
         if (kickThreshold > 0 && currentVL >= kickThreshold) {
-            String kickCommand = plugin.getConfig().getString("vl-system.kick-command");
+            String kickCommand = plugin.getConfig().getString("vl-system." + flyingType + ".kick-command");
             if (kickCommand != null && !kickCommand.isEmpty()) {
                 kickCommand = kickCommand.replace("{player}", player.getName());
-                plugin.getLogger().info("执行踢出命令: " + kickCommand);
+                plugin.getLogger().info("执行" + (isUsingElytra ? "鞘翅飞行" : "普通飞行") + "踢出命令: " + kickCommand);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), kickCommand);
             }
         }

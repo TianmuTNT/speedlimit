@@ -35,13 +35,27 @@ worlds:
 # VL累积系统配置
 # 设置为 -1 表示不执行相应操作
 vl-system:
-  # 累积多少VL后踢出玩家 (-1 = 不踢出)
-  kick-threshold: 5
-  # 累积多少VL后封禁玩家 (-1 = 不封禁)
-  ban-threshold: 10
-  # 踢出玩家的命令 (使用 {player} 作为玩家名占位符)
-  kick-command: "kick {player} 累积超速违规次数过多"
-  # 封禁玩家的命令 (使用 {player} 作为玩家名占位符)
-  ban-command: "ban {player} 累积超速违规次数过多"
+  # 普通飞行VL配置
+  normal-flying:
+    # 累积多少VL后踢出玩家 (-1 = 不踢出)
+    kick-threshold: 5
+    # 累积多少VL后封禁玩家 (-1 = 不封禁)
+    ban-threshold: 10
+    # 踢出玩家的命令 (使用 {player} 作为玩家名占位符)
+    kick-command: "kick {player} 普通飞行超速违规次数过多"
+    # 封禁玩家的命令 (使用 {player} 作为玩家名占位符)
+    ban-command: "ban {player} 普通飞行严重超速违规"
+  
+  # 鞘翅飞行VL配置
+  elytra-flying:
+    # 累积多少VL后踢出玩家 (-1 = 不踢出)
+    kick-threshold: 3
+    # 累积多少VL后封禁玩家 (-1 = 不封禁)
+    ban-threshold: 6
+    # 踢出玩家的命令 (使用 {player} 作为玩家名占位符)
+    kick-command: "kick {player} 鞘翅飞行超速违规次数过多"
+    # 封禁玩家的命令 (使用 {player} 作为玩家名占位符)
+    ban-command: "ban {player} 鞘翅飞行严重超速违规"
+  
   # VL重置时间 (分钟，-1 = 永不重置)
   vl-reset-minutes: 30
