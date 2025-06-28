@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import java.util.List;
 
 /**
  * 监听玩家移动并限制速度
@@ -154,22 +155,30 @@ public class MoveListener {
         
         // 检查是否需要封禁
         if (banThreshold > 0 && currentVL >= banThreshold) {
-            String banCommand = plugin.getConfig().getString("vl-system." + flyingType + ".ban-command");
-            if (banCommand != null && !banCommand.isEmpty()) {
-                banCommand = banCommand.replace("{player}", player.getName());
-                plugin.getLogger().info("执行" + (isUsingElytra ? "鞘翅飞行" : "普通飞行") + "封禁命令: " + banCommand);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), banCommand);
-            }
+            executeCommandList(player, "vl-system." + flyingType + ".ban-commands", isUsingElytra ? "鞘翅飞行" : "普通飞行", "封禁");
             return; // 封禁后不需要再踢出
         }
         
         // 检查是否需要踢出
         if (kickThreshold > 0 && currentVL >= kickThreshold) {
-            String kickCommand = plugin.getConfig().getString("vl-system." + flyingType + ".kick-command");
-            if (kickCommand != null && !kickCommand.isEmpty()) {
-                kickCommand = kickCommand.replace("{player}", player.getName());
-                plugin.getLogger().info("执行" + (isUsingElytra ? "鞘翅飞行" : "普通飞行") + "踢出命令: " + kickCommand);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), kickCommand);
+            executeCommandList(player, "vl-system." + flyingType + ".kick-commands", isUsingElytra ? "鞘翅飞行" : "普通飞行", "踢出");
+        }
+    }
+
+    /**
+     * 执行命令列表
+     */
+    private void executeCommandList(Player player, String configPath, String flyingType, String actionType) {
+        List<?> commandList = plugin.getConfig().getList(configPath);
+        if (commandList != null && !commandList.isEmpty()) {
+            plugin.getLogger().info("执行" + flyingType + actionType + "命令列表:");
+            for (Object commandObj : commandList) {
+                if (commandObj instanceof String) {
+                    String command = (String) commandObj;
+                    command = command.replace("{player}", player.getName());
+                    plugin.getLogger().info("  - " + command);
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+                }
             }
         }
     }
